@@ -36,15 +36,15 @@ else:
     handle = "Unknown Handle"
 
 if 'originASes' in net:
-    AS = net['originASes']['originAS']['$']
+    AS = " - " + net['originASes']['originAS']['$']
 else:
-    AS = "AS Unknown"
+    AS = ""
 
 block = net['netBlocks']['netBlock']['startAddress']['$']
 cidr = net['netBlocks']['netBlock']['cidrLength']['$']
 desc = net['netBlocks']['netBlock']['description']['$']
 
-print("{org} ({handle}) - {AS}".format(org=org, handle=handle, AS=AS))
+print("{org} ({handle}){AS}".format(org=org, handle=handle, AS=AS))
 print("{block}/{cidr} - {description}".format(block=block,
                                               cidr=cidr,
                                               description=desc))
