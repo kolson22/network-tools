@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+from datetime import datetime
+import socket
+import ssl
+import sys
+import json
+
+if len(sys.argv) < 2:
+    print("You need to enter a FQDN and port in the format of hostname:port")
+    sys.exit(1)
+
+args = sys.argv[1]
+
+if len(args.split(':')) < 2:
+    args = args + ':443'
+
+addr, port = args.split(":")
+timeout = None
+
+try:
+    with socket.create_connection((addr, port), timeout=timeout) as sock:
+        context = ssl.create_default_context()
+        with context.wrap_socket(sock, server_hostname=addr) as sslsock:
+            cert = sslsock.getpeercert()
+            subjectName = cert['subject'][0][0][1]
+            expires = cert['notAfter']
+
+            date_time_obj = datetime.strptime(expires, '%b %d %H:%M:%S %Y GMT')
+
+            subject_output = str(cert['subject']).replace('(', '').replace('),)', '').replace('[', '').replace(']', '').replace(" '", "").replace("'", "").replace(" '", "").replace(')','').split(',')
+            idx = 0
+            subject = {}
+            while idx <= len(subject_output) - 2:
+                subject[subject_output[idx]] = subject_output[idx + 1]
+                idx += 2
+
+            print(json.dumps({
+                'name': addr,
+                'cn': subject['commonName'],
+                'expires_days': (date_time_obj - datetime.now()).days
+                }, indent=4))
+except Exception as e:
+    print(e)
