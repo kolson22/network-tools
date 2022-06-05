@@ -34,6 +34,7 @@ try:
                 subject[subject_output[idx]] = subject_output[idx + 1]
                 idx += 2
 
+            print((date_time_obj - datetime.now()).days)
             print(json.dumps({
                 'name': addr,
                 'cn': subject['commonName'],
